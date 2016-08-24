@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>CSV Chart</title>
+</head>
+<body>
+  <div id="chart"></div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highstock/4.2.6/highstock.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highcharts/4.2.6/modules/data.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.14.1/moment.min.js"></script>
+  <script type="text/javascript">
+    $(function(){
+      $.get('serial.csv', function(csv) {
+        // Update NULL values
+        csv = csv.replace(/ERROR/g, "");
+
+        // Draw Chart
+        $('#chart').highcharts("StockChart", {
+          chart: {
+            type: "line"
+          },
+
+          data: {
+            csv: csv,
+            parseDate: function(date) {
+              return moment(date, "YYYY-MM-DDTHH:mm:ss.SSSZ").valueOf();
+            }
+          },
+
+          rangeSelector: {
+            buttons: [{
+              type: 'minute',
+              count: 5,
+              text: '5m'
+            },
+            {
+              type: 'minute',
+              count: 30,
+              text: '30m'
+            },
+            {
+              type: 'hour',
+              count: 1,
+              text: '1h'
+            },
+            {
+              type: 'hour',
+              count: 3,
+              text: '3h'
+            },
+            {
+              type: 'all',
+              text: 'All'
+            }]
+          },
+
+          series: [{
+            color: "red",
+            dashStyle: "Dash",
+            yAxis: 1,
+            tooltip: { valueSuffix: "%" }
+          },
+          {
+            color: "red",
+            yAxis: 0,
+            tooltip: { valueSuffix: "˚C" }
+          },
+          {
+            color: "green",
+            dashStyle: "Dash",
+            yAxis: 1,
+            tooltip: { valueSuffix: "%" }
+          },
+          {
+            color: "green",
+            yAxis: 0,
+            tooltip: { valueSuffix: "˚C" }
+          },
+          {
+            color: "blue",
+            dashStyle: "Dash",
+            yAxis: 1,
+            tooltip: { valueSuffix: "%" }
+          },
+          {
+            color: "blue",
+            yAxis: 0,
+            tooltip: { valueSuffix: "˚C" }
+          }],
+
+          title: {
+            text: "Conditions"
+          },
+
+          tooltip: {
+            shared: true
+          },
+
+          yAxis: [{ // Temperature
+            labels: {
+              format: "{value}˚C"
+            },
+            title: {
+              text: "Temperature"
+            },
+            opposite: false
+          },
+          { // Humidity
+            labels: {
+              format: "{value}%"
+            },
+            title: {
+              text: "Relative Humidity"
+            },
+            opposite: true
+          }]
+        });
+      });
+    });
+  </script>
+
+</body>
+</html>
